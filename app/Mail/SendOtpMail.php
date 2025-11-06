@@ -14,13 +14,15 @@ class SendOtpMail extends Mailable
     use Queueable, SerializesModels;
 
     public string $otp; // Buat properti publik untuk OTP
+    public string $email;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(string $otp)
+    public function __construct(string $otp, string $email)
     {
         $this->otp = $otp; // Terima OTP saat Mailable dibuat
+        $this->email = $email; // Terima OTP saat Mailable dibuat
     }
 
     /**
