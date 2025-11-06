@@ -26,5 +26,13 @@
     Belum punya akun?
     <a href="{{ route('employee.register') }}" class="text-gray-900 underline">Daftar</a>
   </p>
+  {{-- ... (Form login Anda) ... --}}
+
+  <div class="flex items-center justify-end mt-4">
+      <a class="underline text-sm text-gray-600 hover:text-gray-900"
+        href="{{ route('employee.password.request.form') }}">
+          Lupa password Anda?
+      </a>
+  </div>
 </form>
 @endsection

@@ -48,7 +48,7 @@ class OtpPasswordResetController extends Controller
 
         // 4. Kirim email berisi OTP (yang BUKAN hash)
         try {
-            Mail::to($email)->send(new SendOtpMail($otp));
+            Mail::to($email)->send(new SendOtpMail($otp, $email));
         } catch (\Exception $e) {
             // Jika GMail gagal (salah password .env, dll)
             return response()->json(['message' => 'Gagal mengirim email.', 'error' => $e->getMessage()], 500);

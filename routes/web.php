@@ -22,6 +22,16 @@ Route::middleware('auth:employee')->group(function () {
     Route::post('/logout', [EmployeeAuthController::class, 'logout'])->name('employee.logout');
 });
 
+// Rute untuk MENAMPILKAN halaman/form "Lupa Password"
+Route::get('employee/auth/lupa-password', function () {
+    return view('employee.auth.lupa-password');
+})->name('employee.password.request.form');
+
+// Rute untuk MENAMPILKAN halaman/form "Reset Password"
+Route::get('employee/auth/reset-password', function () {
+    return view('employee.auth.reset-password');
+})->name('employee.password.reset.form');
+
 // ================= Admin Auth ====================
 Route::prefix('admin')->group(function () {
     Route::middleware('guest:admin')->group(function () {
