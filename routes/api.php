@@ -2,7 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\AuthController; // Controller baru yang akan kita buat
+use App\Http\Controllers\Api\AuthController; 
+use App\Http\Controllers\Api\OtpPasswordResetController;
 
 // Registrasi Employee (Admin tidak boleh register via API)
 Route::post('/employee/register', [AuthController::class, 'registerEmployee']);
@@ -21,3 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Endpoint untuk logout
     Route::post('/logout', [AuthController::class, 'logout']);
 });
+
+Route::post('/otp/send', [OtpPasswordResetController::class, 'sendOtp']);
+
+Route::post('/otp/reset', [OtpPasswordResetController::class, 'resetWithOtp']);
