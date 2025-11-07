@@ -8,12 +8,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use App\Models\Employee; 
+use Illuminate\Support\Facades\DB; 
+use Carbon\Carbon; 
 
 class AuthController extends Controller
 {
     /**
      * Registrasi Employee.
-     * Logika ini didasarkan pada model User Anda.
      */
     public function registerEmployee(Request $request)
     {
@@ -23,28 +25,46 @@ class AuthController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'employee', // Hardcode role 'employee' saat registrasi
-        ]);
+        // Gunakan Transaction
+        DB::beginTransaction();
+        try {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role' => 'employee', // Hardcode role 'employee' saat registrasi
+            ]);
 
-        // Buat token
-        $token = $user->createToken('auth_token')->plainTextToken;
+            // === INI SOLUSINYA ===
+            Employee::create([
+                'user_id' => $user->id,
+                'join_date' => Carbon::today(), // Set join_date ke hari ini
+            ]);
+            // ======================
+            
+            DB::commit(); // Simpan
 
-        // Kembalikan response JSON
-        return response()->json([
-            'message' => 'Registrasi berhasil',
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-            'user' => $user
-        ], 201);
+            // Buat token
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            // Kembalikan response JSON
+            return response()->json([
+                'message' => 'Registrasi berhasil',
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+                'user' => $user
+            ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack(); // Batalkan jika error
+            return response()->json([
+                'message' => 'Registrasi gagal, terjadi kesalahan server.'
+            ], 500);
+        }
     }
 
     /**
      * Login untuk Employee.
-     * Menggunakan logika yang sama dengan EmployeeAuthController Anda.
      */
     public function loginEmployee(Request $request)
     {
@@ -53,7 +73,6 @@ class AuthController extends Controller
 
     /**
      * Login untuk Admin.
-     * Menggunakan logika yang sama dengan AdminAuthController Anda.
      */
     public function loginAdmin(Request $request)
     {
@@ -70,20 +89,15 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        // Tambahkan 'role' ke kredensial
         $credentials['role'] = $role;
 
-        // Coba login (menggunakan guard 'web' / default, tapi memfilter user)
         if (! Auth::attempt($credentials)) {
             return response()->json([
                 'message' => 'Email/password salah atau role tidak sesuai.'
             ], 401);
         }
 
-        // Dapatkan user
         $user = User::where('email', $request->email)->first();
-
-        // Buat token
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([

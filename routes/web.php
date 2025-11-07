@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\EmployeeAuthController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Employee\ProfileController;
 
 Route::get('/', fn() => redirect()->route('employee.login'));
 
@@ -20,6 +21,10 @@ Route::middleware('guest:employee')->group(function () {
 Route::middleware('auth:employee')->group(function () {
     Route::get('/dashboard', fn () => view('employee.dashboard'))->name('employee.dashboard');
     Route::post('/logout', [EmployeeAuthController::class, 'logout'])->name('employee.logout');
+
+    // == RUTE PROFIL ==
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('employee.profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('employee.profile.update');
 });
 
 // Rute untuk MENAMPILKAN halaman/form "Lupa Password"
@@ -45,5 +50,7 @@ Route::prefix('admin')->group(function () {
 
         // contoh halaman admin-only
         Route::get('/users', fn () => 'Kelola User (Admin)')->name('admin.users.index');
+
+        
     });
 });
