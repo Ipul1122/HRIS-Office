@@ -47,4 +47,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // Relasi ke Employee One-to-One
+    public function employee()
+    {
+        return $this->hasOne(Employee::class);
+    }
 }
