@@ -41,6 +41,10 @@ Route::middleware('auth:employee')->group(function () {
     // == RUTE PROFIL ==
     Route::get('/profile', [ProfileController::class, 'edit'])->name('employee.profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('employee.profile.update');
+    Route::get('/profile/verify', [ProfileController::class, 'showVerifyCodeForm'])->name('employee.profile.verify.form');
+    Route::post('/profile/verify', [ProfileController::class, 'verifyCode'])->name('employee.profile.verify.submit');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('employee.profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('employee.profile.update');
 });
 
 // Rute untuk MENAMPILKAN halaman/form "Lupa Password"

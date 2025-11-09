@@ -10,25 +10,65 @@ use App\Models\Employee;
 class ProfileController extends Controller
 {
     /**
+     * Menampilkan form untuk verifikasi employee_code.
+     * (METODE BARU)
+     */
+    public function showVerifyCodeForm()
+    {
+        if (session('employee_code_verified')) {
+            return redirect()->route('employee.profile.edit');
+        }
+        
+        return view('employee.profile.verify-code');
+    }
+
+    /**
+     * Memproses employee_code yang disubmit.
+     */
+    public function verifyCode(Request $request)
+    {
+        $request->validate([
+            'employee_code' => 'required|string',
+        ]);
+
+        $user = Auth::user();
+        $employee = $user->employee; 
+
+        if ($employee && $request->employee_code === $employee->employee_code) {
+            
+            // Jika cocok, simpan flag di session
+            $request->session()->put('employee_code_verified', true);
+            
+            // Redirect ke halaman edit profil yang sebenarnya
+            return redirect()->route('employee.profile.edit');
+        }
+
+        // Jika gagal, kembalikan ke form verifikasi dengan error
+        return back()->withErrors(['employee_code' => 'Employee code yang Anda masukkan tidak valid.']);
+    }
+
+
+    /**
      * Menampilkan form edit profil untuk employee yang sedang login.
      */
     public function edit()
     {
+        if (!session('employee_code_verified')) {
+            return redirect()->route('employee.profile.verify.form')
+                             ->with('warning', 'Anda harus memasukkan employee code untuk mengakses profil.');
+        }
+        // --- SELESAI PERUBAHAN ---
+
         $user = Auth::user();
         
-        // --- LOGIKA DIPERBARUI ---
-        // Gunakan firstOrCreate sebagai jaring pengaman
-        // jika ada user lama yang terlanjur dibuat tanpa data employee.
         $employee = Employee::firstOrCreate(
             ['user_id' => $user->id], // Kunci untuk mencari
             [
-                // Data ini hanya akan diisi JIKA record baru dibuat
-                'join_date' => $user->created_at->toDateString() // Ambil tgl user dibuat
+                'join_date' => $user->created_at->toDateString() 
             ]
         );
-        // -------------------------
 
-        // Tampilkan view
+        // Tampilkan view edit
         return view('employee.profile.edit', compact('user', 'employee'));
     }
 
@@ -37,9 +77,11 @@ class ProfileController extends Controller
      */
     public function update(Request $request)
     {
+        if (!session('employee_code_verified')) {
+            return redirect()->route('employee.profile.verify.form');
+        }
+
         $user = Auth::user();
-        
-        // Pastikan $employee ada (menggunakan ->employee dari relasi)
         $employee = $user->employee;
 
         // Validasi data
@@ -53,6 +95,8 @@ class ProfileController extends Controller
 
         // Update data di tabel employees
         $employee->update($validatedData);
+
+        $request->session()->forget('employee_code_verified');
 
         return redirect()->route('employee.profile.edit')->with('success', 'Profil berhasil diperbarui!');
     }
