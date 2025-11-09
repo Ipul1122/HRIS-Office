@@ -7,11 +7,12 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Employee; // Pastikan ini di-import
-use Illuminate\Support\Facades\DB; // Import DB
-use Carbon\Carbon; // Import Carbon
+use App\Models\Employee;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon; 
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Validation\Rules;
+use Illuminate\Support\Str; 
 
 class RegisteredUserController extends Controller
 {
@@ -38,14 +39,19 @@ class RegisteredUserController extends Controller
                 'role'     => 'employee', // default
             ]);
 
-            // === INI SOLUSINYA ===
+            // --- 2. LOGIKA PEMBUATAN KODE UNIK ---
+            // Buat kode unik 8 digit, pastikan tidak bentrok
+            do {
+                $code = strtoupper(Str::random(8));
+            } while (Employee::where('employee_code', $code)->exists());
+            // ------------------------------------
+
             // Langsung buat data Employee yang terkait
             Employee::create([
                 'user_id' => $user->id,
                 'join_date' => Carbon::today(), // Set join_date ke hari ini
-                // Anda bisa tambahkan logic untuk 'employee_code' di sini jika perlu
+                'employee_code' => $code, // <-- 3. SIMPAN KODE
             ]);
-            // ======================
 
             DB::commit(); // Simpan perubahan jika berhasil
 
