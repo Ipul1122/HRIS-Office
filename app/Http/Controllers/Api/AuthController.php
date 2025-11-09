@@ -11,6 +11,7 @@ use Illuminate\Validation\Rules;
 use App\Models\Employee; 
 use Illuminate\Support\Facades\DB; 
 use Carbon\Carbon; 
+use Illuminate\Support\Str; // Generate kode 
 
 class AuthController extends Controller
 {
@@ -35,12 +36,17 @@ class AuthController extends Controller
                 'role' => 'employee', // Hardcode role 'employee' saat registrasi
             ]);
 
-            // === INI SOLUSINYA ===
+            // --- 2. LOGIKA PEMBUATAN KODE UNIK ---
+            do {
+                $code = strtoupper(Str::random(8));
+            } while (Employee::where('employee_code', $code)->exists());
+            // ------------------------------------
+
             Employee::create([
                 'user_id' => $user->id,
-                'join_date' => Carbon::today(), // Set join_date ke hari ini
+                'join_date' => Carbon::today(),
+                'employee_code' => $code, // <-- 3. SIMPAN KODE
             ]);
-            // ======================
             
             DB::commit(); // Simpan
 

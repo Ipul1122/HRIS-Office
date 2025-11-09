@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\EmployeeAuthController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Employee\ProfileController;
+use Illuminate\Support\Facades\Auth; // Import Auth
 
 Route::get('/', fn() => redirect()->route('employee.login'));
 
@@ -19,7 +20,22 @@ Route::middleware('guest:employee')->group(function () {
 });
 
 Route::middleware('auth:employee')->group(function () {
-    Route::get('/dashboard', fn () => view('employee.dashboard'))->name('employee.dashboard');
+    
+    // --- PERBAIKAN DI SINI ---
+    Route::get('/dashboard', function () {
+        // Ambil id user dari guard employee
+        $id = Auth::guard('employee')->id();
+
+        // Jika ada id, ambil model Eloquent dan eager-load relation 'employee'
+        $user = $id ? \App\Models\User::with('employee')->find($id) : null;
+
+        // Dapatkan employee (atau null jika tidak ditemukan)
+        $employee = $user ? $user->employee : null;
+
+        return view('employee.dashboard', ['employee' => $employee]);
+    })->name('employee.dashboard');
+    // ----------------------------
+
     Route::post('/logout', [EmployeeAuthController::class, 'logout'])->name('employee.logout');
 
     // == RUTE PROFIL ==
