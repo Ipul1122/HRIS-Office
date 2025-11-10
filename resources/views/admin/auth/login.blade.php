@@ -1,6 +1,5 @@
 @extends('layouts.app')
 @section('title','Login Admin | HRIS')
-@section('heading','Login Admin')
 
 @section('content')
 <form method="POST" action="{{ route('admin.login.submit') }}" class="space-y-4">
