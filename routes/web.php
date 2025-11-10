@@ -7,6 +7,9 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Employee\ProfileController;
 use Illuminate\Support\Facades\Auth; // Import Auth
 
+// Admin Route
+use App\Http\Controllers\Admin\GetEmployeeController;
+
 Route::get('/', fn() => redirect()->route('employee.login'));
 
 // ================= Employee Auth =================
@@ -68,9 +71,9 @@ Route::prefix('admin')->group(function () {
         Route::get('/dashboard', fn () => view('admin.dashboard'))->name('admin.dashboard');
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
+        // Update the route name to include admin prefix
+        Route::get('/get-employee', [GetEmployeeController::class, 'getEmployee'])->name('admin.getEmployee.index');
         // contoh halaman admin-only
         Route::get('/users', fn () => 'Kelola User (Admin)')->name('admin.users.index');
-
-        
     });
 });
