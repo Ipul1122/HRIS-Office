@@ -41,17 +41,15 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 
     // Relasi ke Employee One-to-One
     public function employee()
     {
-        return $this->hasOne(Employee::class);
+        // gunakan 'employee_id' sebagai foreign key di table employees
+        return $this->hasOne(Employee::class, 'employee_id', 'id');
     }
 }

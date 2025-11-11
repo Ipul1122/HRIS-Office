@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Str; 
+use Illuminate\Support\Facades\Log;
 
 class RegisteredUserController extends Controller
 {
@@ -25,7 +26,7 @@ class RegisteredUserController extends Controller
     {
         $validated = $request->validate([
             'name'     => ['required','string','max:255'],
-            'email'    => ['required','string', 'lowercase', 'email','max:255','unique:users,email'],
+            'email'    => ['required','string','email','max:255','unique:users,email'],
             'password' => ['required','string','min:8','confirmed', Rules\Password::defaults()],
         ]);
 
@@ -39,21 +40,17 @@ class RegisteredUserController extends Controller
                 'role'     => 'employee', // default
             ]);
 
-            // --- 2. LOGIKA PEMBUATAN KODE UNIK ---
-            // Buat kode unik 8 digit, pastikan tidak bentrok
             do {
                 $code = strtoupper(Str::random(8));
             } while (Employee::where('employee_code', $code)->exists());
-            // ------------------------------------
 
-            // Langsung buat data Employee yang terkait
             Employee::create([
-                'user_id' => $user->id,
-                'join_date' => Carbon::today(), // Set join_date ke hari ini
-                'employee_code' => $code, // <-- 3. SIMPAN KODE
+                'employee_id' => $user->id,
+                'join_date' => Carbon::today(), 
+                'employee_code' => $code,
             ]);
 
-            DB::commit(); // Simpan perubahan jika berhasil
+            DB::commit(); 
 
             event(new Registered($user));
 
@@ -64,7 +61,7 @@ class RegisteredUserController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack(); // Batalkan jika terjadi error
-            // Sebaiknya log error $e->getMessage()
+            Log::error('Registrasi gagal: '.$e->getMessage());
             return back()->withInput()->withErrors(['email' => 'Terjadi kesalahan saat registrasi.']);
         }
     }

@@ -24,6 +24,7 @@
                                 <tr>
                                     <th>User ID</th>
                                     <th>Employee Code</th>
+                                    <th>nama</th>
                                     <th>Base Salary</th>
                                     <th>Phone Number</th>
                                     <th>Address</th>
@@ -36,8 +37,9 @@
                             <tbody>
                                 @forelse ($employees as $employee)
                                     <tr>
-                                        <td>{{ $employee->user_id }}</td>
+                                        <td>{{ $employee->employee_id }}</td>
                                         <td>{{ $employee->employee_code }}</td>
+                                        <td>{{ $employee->user->name ?? 'N/A' }}</td>
                                         <td>{{ $employee->base_salary }}</td>
                                         <td>{{ $employee->phone_number }}</td>
                                         <td>{{ $employee->address }}</td>

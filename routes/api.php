@@ -4,7 +4,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController; 
 use App\Http\Controllers\Api\OtpPasswordResetController;
-use App\Http\Controllers\Api\EmployeeProfileController; 
 
 // Registrasi Employee
 Route::post('/employee/register', [AuthController::class, 'registerEmployee']);
@@ -18,12 +17,10 @@ Route::post('/admin/login', [AuthController::class, 'loginAdmin']);
 Route::post('/otp/send', [OtpPasswordResetController::class, 'sendOtp']);
 Route::post('/otp/reset', [OtpPasswordResetController::class, 'resetWithOtp']);
 
-// Rute yang dilindungi token
+// Rute yang dilindungi token (untuk Employee)
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
-    Route::get('/employee/profile', [EmployeeProfileController::class, 'show']);
     Route::post('/logout', [AuthController::class, 'logout']);
 });
-

@@ -62,7 +62,7 @@ class ProfileController extends Controller
         $user = Auth::user();
         
         $employee = Employee::firstOrCreate(
-            ['user_id' => $user->id], // Kunci untuk mencari
+            ['employee_id' => $user->id], // Kunci untuk mencari
             [
                 'join_date' => $user->created_at->toDateString() 
             ]
