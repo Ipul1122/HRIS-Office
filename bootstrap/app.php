@@ -4,6 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\RoleMiddleware;
+use Illuminate\Http\Request; // <-- TAMBAHKAN IMPORT INI
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -17,6 +18,23 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => RoleMiddleware::class,
         ]);
+
+        // ======================================================
+        // TAMBAHKAN KODE DI BAWAH INI
+        // ======================================================
+        $middleware->redirectGuestsTo(function (Request $request) {
+            // Jika rute yang diakses adalah rute admin
+            if ($request->is('admin') || $request->is('admin/*')) {
+                return route('admin.login');
+            }
+
+            // Jika tidak, arahkan ke login karyawan (default)
+            return route('employee.login');
+        });
+        // ======================================================
+        // AKHIR DARI KODE TAMBAHAN
+        // ======================================================
+        
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
