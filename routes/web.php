@@ -16,7 +16,10 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Admin\GetEmployeeController;
 
-Route::get('/', fn() => redirect()->route('employee.login'));
+
+Route::get('/', function () {
+    return view('welcome');
+});
 
 // ================= Employee Auth =================
 Route::middleware('guest:employee')->group(function () {
@@ -30,9 +33,7 @@ Route::middleware('auth:employee')->group(function () {
     Route::get('/dashboard', function () {
         // Ambil id user dari guard employee
         $id = Auth::guard('employee')->id();
-        // Jika ada id, ambil model Eloquent dan eager-load relation 'employee'
         $user = $id ? \App\Models\User::with('employee')->find($id) : null;
-        // Dapatkan employee (atau null jika tidak ditemukan)
         $employee = $user ? $user->employee : null;
         return view('employee.dashboard', ['employee' => $employee]);
     })->name('employee.dashboard');
@@ -43,9 +44,6 @@ Route::middleware('auth:employee')->group(function () {
     Route::put('/profile', [ProfileController::class, 'update'])->name('employee.profile.update');
     Route::get('/profile/verify', [ProfileController::class, 'showVerifyCodeForm'])->name('employee.profile.verify.form');
     Route::post('/profile/verify', [ProfileController::class, 'verifyCode'])->name('employee.profile.verify.submit');
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('employee.profile.edit');
-    Route::put('/profile', [ProfileController::class, 'update'])->name('employee.profile.update');
-
 });
 // Rute untuk MENAMPILKAN halaman/form "Lupa Password"
 
