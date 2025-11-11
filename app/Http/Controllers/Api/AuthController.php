@@ -43,7 +43,7 @@ class AuthController extends Controller
             // ------------------------------------
 
             Employee::create([
-                'user_id' => $user->id,
+                'employee_id' => $user->id,
                 'join_date' => Carbon::today(),
                 'employee_code' => $code, // <-- 3. SIMPAN KODE
             ]);

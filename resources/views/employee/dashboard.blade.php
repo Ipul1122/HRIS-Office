@@ -1,11 +1,9 @@
 @extends('layouts.app')
 @section('title','Dashboard Pegawai')
-@section('heading','Dashboard Pegawai')
 
 @section('content')
 <p class="mb-4">Selamat datang, {{ auth('employee')->user()->name }} (Pegawai)</p>
 
-<!-- ================= TAMBAHAN BARU ================= -->
 <div class="mt-4 p-4 bg-gray-100 rounded-lg border border-gray-200">
     <h3 class="font-semibold text-lg text-gray-800">Kode Keamanan Pegawai</h3>
     <p class="text-gray-600 mt-1 text-sm">Gunakan kode ini saat Anda perlu melakukan perubahan penting pada data profil Anda.</p>
@@ -20,7 +18,6 @@
         </p>
     @endif
 </div>
-<!-- ================= AKHIR TAMBAHAN ================= -->
 
 
 <div class="flex space-x-2 mt-6">
