@@ -19,21 +19,16 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => RoleMiddleware::class,
         ]);
 
-        // ======================================================
-        // TAMBAHKAN KODE DI BAWAH INI
-        // ======================================================
+        
         $middleware->redirectGuestsTo(function (Request $request) {
             // Jika rute yang diakses adalah rute admin
             if ($request->is('admin') || $request->is('admin/*')) {
                 return route('admin.login');
             }
 
-            // Jika tidak, arahkan ke login karyawan (default)
+            // return ke login page
             return route('employee.login');
         });
-        // ======================================================
-        // AKHIR DARI KODE TAMBAHAN
-        // ======================================================
         
     })
     ->withExceptions(function (Exceptions $exceptions) {
