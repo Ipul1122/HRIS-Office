@@ -98,6 +98,6 @@ class ProfileController extends Controller
 
         $request->session()->forget('employee_code_verified');
 
-        return redirect()->route('employee.profile.edit')->with('success', 'Profil berhasil diperbarui!');
+        return redirect()->route('employee.dashboard')->with('success', 'Profil berhasil diperbarui!');
     }
 }
